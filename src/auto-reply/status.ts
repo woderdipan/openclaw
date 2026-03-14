@@ -34,10 +34,6 @@ import {
   resolveTtsPrefsPath,
 } from "../tts/tts.js";
 import {
-  CHARS_PER_TOKEN_ESTIMATE,
-  estimateMessageCharsCached,
-} from "../agents/pi-embedded-runner/tool-result-char-estimator.js";
-import {
   estimateUsageCost,
   formatTokenCount as formatTokenCountShared,
   formatUsd,
