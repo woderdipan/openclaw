@@ -34,6 +34,10 @@ import {
   resolveTtsPrefsPath,
 } from "../tts/tts.js";
 import {
+  CHARS_PER_TOKEN_ESTIMATE,
+  estimateMessageCharsCached,
+} from "../agents/pi-embedded-runner/tool-result-char-estimator.js";
+import {
   estimateUsageCost,
   formatTokenCount as formatTokenCountShared,
   formatUsd,
@@ -535,6 +539,17 @@ export function buildStatusMessage(args: StatusArgs): string {
   const groupActivationValue = isGroupSession
     ? (args.groupActivation ?? entry?.groupActivation ?? "mention")
     : undefined;
+
+  // For local models without usage tracking, show estimated context window size
+  const isLocalModel = activeProvider === "local" || activeProvider === "ollama";
+  let estimatedContextUsage = 0;
+  
+  // If token count is 0 (common with local models), use estimated context window
+  if (totalTokens === 0 && contextTokens && contextTokens > 0) {
+    // Show the full context window size as estimate
+    estimatedContextUsage = contextTokens;
+    totalTokens = contextTokens;
+  }
 
   const contextLine = [
     `Context: ${formatTokens(totalTokens, contextTokens ?? null)}`,
